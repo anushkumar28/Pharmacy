@@ -9,35 +9,32 @@ public class Pharmacy {
 		
 		System.out.println("- Pharmacy -");
 		Scanner read = new Scanner(System.in);
-		
+		char choice = 'Z';
 		for(;;){
 			Menu.showMenu();
 			
-			char choice = read.nextLine().charAt(0);
+			try{
+				choice = read.nextLine().charAt(0);
+			}catch(StringIndexOutOfBoundsException exc){}
 			switch(choice){
 			case 'A':
-				
-				
-				System.out.println("Product was successfully added!");
+				db.addProduct();	
 				break;
 			case 'R':
 				db.removeProduct();
 				break;
 			case 'S':
-				System.out.println("- Showing all products -");
-				System.out.print("Sort by(id, name, producer, price, quantity): ");
-				String sort = read.nextLine();
-				db.showAll(sort);
+				db.showAll();
 				break;
 			case 'E':
 				db.editProduct();
 				break;
 			case 'X':
 				return;
+			default:
+				System.out.println("Unknown choice!");
+				break;
 			}
-			System.out.println();
 		}
-
 	}
-
 }

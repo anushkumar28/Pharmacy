@@ -35,6 +35,7 @@ public class Database {
 		int quantity = read.nextInt();
 		
 		sendManipulateQuery("INSERT INTO medicines (name, producer, price, quantity) VALUES ('" + name + "', '" + producer + "', '" + price + "', '" + quantity + "')");
+		System.out.println("Product was successfully added!");
 	}
 	
 	void removeProduct(){
@@ -45,10 +46,13 @@ public class Database {
 		System.out.println("Successfully removed product!");
 	}
 	
-	void showAll(String sort){
+	void showAll(){
+		System.out.println("- Showing all products -");
+		System.out.print("Sort by(id, name, producer, price, quantity): ");
+		String sort = read.nextLine();
 		try{
 			sendQuery("SELECT * FROM medicines ORDER BY " + sort);
-			//System.out.println("ID\tNAME\tPRODUCER\tPRICE\tQUANTITY");
+
 			while(result.next()){
 				int id = result.getInt("id");
 				String name = result.getString("name");
@@ -59,20 +63,33 @@ public class Database {
 				System.out.println(id + ".\t" + name + "\t\t" + producer + "\t\t" + price + "$\t" + quantity + "pcs.");
 			}
 		}catch(Exception exc){
-			System.out.println("showAll Exception: " + exc);
+			System.out.println("Unexpected error :(");
 		}
 	}
 	
 	void editProduct(){
-		System.out.println("ID: ");
+		System.out.println("- Editing product -");
+		System.out.print("ID: ");
 		int id = read.nextInt();
-		System.out.print("Edit(name, producer, price, quantity): ");
-		read.next();
-		String edit = read.nextLine();
-		System.out.print("Value: ");
-		String value = read.nextLine();
 		
-		sendManipulateQuery("UPDATE medicines SET " + edit + "='" + value + "' WHERE id=" + id);
+		System.out.print("Edit(name, producer, price, quantity): ");
+		String edit = read.next();
+		
+		String query = "UPDATE medicines SET ";
+		
+		System.out.print("Value: ");
+		
+		if(edit.equals("quantity")){
+			int value = read.nextInt();
+			query += "quantity='" + value;
+		}else if(edit.equals("price")){
+			float value = read.nextFloat();
+			query += "price='" + value;
+		}else if(edit.equals("name") || edit.equals("producer")){
+			String value = read.next();
+			query += edit + " = '" + value;
+		}
+		sendManipulateQuery(query + "' WHERE id=" + id);
 		System.out.println("Successfully edited product!");
 	}
 	
@@ -86,7 +103,7 @@ public class Database {
 	
 	void sendQuery(String query){
 		try{	
-			stat.executeQuery(query);
+			result = stat.executeQuery(query);
 		}catch(Exception exc){
 			System.out.println(exc);
 		}
